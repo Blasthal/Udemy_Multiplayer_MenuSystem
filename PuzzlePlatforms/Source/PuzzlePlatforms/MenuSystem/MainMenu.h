@@ -1,0 +1,40 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "MenuInterface.h"
+
+#include "MainMenu.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
+{
+	GENERATED_BODY()
+
+	virtual bool Initialize() override;
+
+public:
+	void SetMenuInterface(IMenuInterface* MenuInterface);
+
+private:
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Host = nullptr;
+
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Join = nullptr;
+
+	UFUNCTION()
+	void OnClickedJoin();
+
+	
+	IMenuInterface* MenuInterface = nullptr;
+
+	UFUNCTION()
+	void HostServer();
+};
