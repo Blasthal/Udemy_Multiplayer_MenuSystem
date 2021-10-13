@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Kismet/KismetStringLibrary.h"
+
 //////////////////////////////////////////////////////////////////////////
 // APuzzlePlatformsCharacter
 
@@ -74,6 +76,10 @@ void APuzzlePlatformsCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APuzzlePlatformsCharacter::OnResetVR);
+
+
+	// Added: Dump HasAuthority
+	UE_LOG(LogTemp, Warning, TEXT("HasAuthority: %s"), *UKismetStringLibrary::Conv_BoolToString(HasAuthority()));
 }
 
 

@@ -4,6 +4,8 @@
 #include "MainMenu.h"
 
 #include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
+#include "Components/EditableTextBox.h"
 
 
 bool UMainMenu::Initialize()
@@ -15,14 +17,24 @@ bool UMainMenu::Initialize()
 	}
 
 
-	if (Host)
+	if (HostButton)
 	{
-		Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+		HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 	}
 
-	if (Join)
+	if (JoinButton)
 	{
-		Join->OnClicked.AddDynamic(this, &UMainMenu::OnClickedJoin);
+		JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
+	}
+
+	if (JoinCancelButton)
+	{
+		JoinCancelButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	}
+
+	if (JoinOkButton)
+	{
+		JoinOkButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
 	}
 
 
@@ -30,21 +42,9 @@ bool UMainMenu::Initialize()
 }
 
 
-void UMainMenu::SetMenuInterface(IMenuInterface* MenuInterface)
-{
-	this->MenuInterface = MenuInterface;
-}
-
-
-void UMainMenu::OnClickedJoin()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Clicked - %s"), *Join->GetName());
-}
-
-
 void UMainMenu::HostServer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("HostServer - %s"), *Host->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("HostServer - %s"), *HostButton->GetName());
 
 	check(MenuInterface);
 	if (MenuInterface)
@@ -52,3 +52,51 @@ void UMainMenu::HostServer()
 		MenuInterface->Host();
 	}
 }
+
+
+void UMainMenu::JoinServer()
+{
+	UE_LOG(LogTemp, Warning, TEXT("JoinServer(%s) - %s"), *IPAddressField->GetText().ToString(), *HostButton->GetName());
+
+	check(MenuInterface);
+	if (MenuInterface)
+	{
+		MenuInterface->Join(IPAddressField->GetText().ToString());
+	}
+}
+
+
+void UMainMenu::OpenMainMenu()
+{
+	check(MenuSwitcher);
+	if (!MenuSwitcher)
+	{
+		return;
+	}
+
+	check(MainMenu);
+	if (!MainMenu)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenu::OpenJoinMenu()
+{
+	check(MenuSwitcher);
+	if (!MenuSwitcher)
+	{
+		return;
+	}
+
+	check(JoinMenu);
+	if (!JoinMenu)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(JoinMenu);
+}
+

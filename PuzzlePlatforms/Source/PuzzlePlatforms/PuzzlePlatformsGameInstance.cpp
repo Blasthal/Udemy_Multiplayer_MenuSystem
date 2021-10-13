@@ -6,7 +6,6 @@
 #include "Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-#include "MenuSystem/MainMenu.h"
 
 #include "PlatformTrigger.h"
 
@@ -14,7 +13,6 @@
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UPuzzlePlatformsGameInstance Constructed"));
-
 
 	// メインメニュー
 	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
@@ -27,7 +25,18 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s, in Constructor"), *MenuBPClass.Class->GetName());
 
 	MenuClass = MenuBPClass.Class;
-	
+
+	// インゲームメニュー
+	static ConstructorHelpers::FClassFinder<UUserWidget> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
+	check(InGameMenuBPClass.Class);
+	if (!InGameMenuBPClass.Class)
+	{
+		return;
+	};
+
+	UE_LOG(LogTemp, Warning, TEXT("Found class %s, in Constructor"), *InGameMenuBPClass.Class->GetName());
+
+	InGameMenuClass = InGameMenuBPClass.Class;
 }
 
 
@@ -48,45 +57,53 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 		return;
 	}
 
-	UMainMenu* Menu = CreateWidget<UMainMenu>(this, MenuClass);
+	Menu = CreateWidget<UMainMenu>(this, MenuClass);
 	check(Menu);
 	if (!Menu)
 	{
 		return;
 	}
 
-	Menu->bIsFocusable = true;
-	Menu->AddToViewport();
+	Menu->Setup();
+	Menu->SetMenuInterface(this);
+}
 
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-	check(PlayerController);
-	if (!PlayerController)
+
+void UPuzzlePlatformsGameInstance::LoadInGameMenu()
+{
+	check(InGameMenuClass);
+	if (!InGameMenuClass)
 	{
 		return;
 	}
 
-	FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(Menu->TakeWidget());
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InGameMenu = CreateWidget<UInGameMenu>(this, InGameMenuClass);
+	check(InGameMenu);
+	if (!InGameMenu)
+	{
+		return;
+	}
 
-	PlayerController->SetInputMode(InputModeData);
-	PlayerController->bShowMouseCursor = true;
-
-
-	Menu->SetMenuInterface(this);
+	InGameMenu->Setup();
+	InGameMenu->SetMenuInterface(this);
 }
 
 
 void UPuzzlePlatformsGameInstance::Host()
 {
+	check(Menu);
+	if (Menu)
+	{
+		Menu->TearDown();
+	}
+
+
 	UEngine* Engine = GetEngine();
 	check(Engine);
 	if (!Engine)
 	{
 		return;
 	}
-
-	Engine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, TEXT("Hosting"));
 
 
 	UWorld* World = GetWorld();
@@ -96,6 +113,10 @@ void UPuzzlePlatformsGameInstance::Host()
 		return;
 	}
 
+
+	UE_LOG(LogTemp, Warning, TEXT("Hosting"));
+	Engine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, TEXT("Hosting"));
+
 	//World->ServerTravel(TEXT("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap"));
 	World->ServerTravel(TEXT("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen"));
 }
@@ -103,6 +124,13 @@ void UPuzzlePlatformsGameInstance::Host()
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address)
 {
+	check(Menu);
+	if (Menu)
+	{
+		Menu->TearDown();
+	}
+
+
 	UEngine* Engine = GetEngine();
 	check(Engine);
 	if (!Engine)
@@ -110,15 +138,16 @@ void UPuzzlePlatformsGameInstance::Join(const FString& Address)
 		return;
 	}
 
-	Engine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
-
-
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	check(PlayerController);
 	if (!PlayerController)
 	{
 		return;
 	}
+
+
+	UE_LOG(LogTemp, Warning, TEXT("Joining %s"), *Address);
+	Engine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }

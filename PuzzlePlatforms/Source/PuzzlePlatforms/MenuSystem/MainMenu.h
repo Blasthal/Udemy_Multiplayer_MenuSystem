@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "MenuInterface.h"
+#include "MenuSystem/MenuWidget.h"
 
 #include "MainMenu.generated.h"
 
@@ -12,29 +11,48 @@
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
+private:
 	virtual bool Initialize() override;
 
-public:
-	void SetMenuInterface(IMenuInterface* MenuInterface);
-
-private:
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Host = nullptr;
-
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Join = nullptr;
+	class UButton* HostButton = nullptr;
 
-	UFUNCTION()
-	void OnClickedJoin();
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinButton = nullptr;
 
-	
-	IMenuInterface* MenuInterface = nullptr;
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* MenuSwitcher = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* MainMenu = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* JoinMenu = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinCancelButton = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinOkButton = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* IPAddressField = nullptr;
+
 
 	UFUNCTION()
 	void HostServer();
+
+	UFUNCTION()
+	void JoinServer();
+
+	UFUNCTION()
+	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenJoinMenu();
 };

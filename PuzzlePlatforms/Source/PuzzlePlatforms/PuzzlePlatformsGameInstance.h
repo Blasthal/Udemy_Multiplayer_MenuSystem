@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MenuSystem/MenuInterface.h"
+#include "MenuSystem/MainMenu.h"
+#include "MenuSystem/InGameMenu.h"
+#include "MenuSystem/MenuWidget.h"
+
 #include "PuzzlePlatformsGameInstance.generated.h"
 
 /**
@@ -22,18 +26,26 @@ public:
 	UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Init() override;
+	
 
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadInGameMenu();
 
 
 	UFUNCTION(Exec)
 	virtual void Host() override;
 
 	UFUNCTION(Exec)
-	void Join(const FString& Address);
+	virtual void Join(const FString& Address) override;
 
 
 private:
 	TSubclassOf<UUserWidget> MenuClass = nullptr;
+	UMainMenu* Menu = nullptr;
+
+	TSubclassOf<UUserWidget> InGameMenuClass = nullptr;
+	UInGameMenu* InGameMenu = nullptr;
 };
