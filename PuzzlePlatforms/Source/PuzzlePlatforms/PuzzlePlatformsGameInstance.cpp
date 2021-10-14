@@ -46,6 +46,7 @@ void UPuzzlePlatformsGameInstance::Init()
 
 	UE_LOG(LogTemp, Warning, TEXT("UPuzzlePlatformsGameInstance Init"));
 	UE_LOG(LogTemp, Warning, TEXT("Founded class %s"), *MenuClass->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Founded class %s"), *InGameMenuClass->GetName());
 }
 
 
@@ -57,15 +58,15 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 		return;
 	}
 
-	Menu = CreateWidget<UMainMenu>(this, MenuClass);
-	check(Menu);
-	if (!Menu)
+	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
+	check(MainMenu);
+	if (!MainMenu)
 	{
 		return;
 	}
 
-	Menu->Setup();
-	Menu->SetMenuInterface(this);
+	MainMenu->Setup();
+	MainMenu->SetMenuInterface(this);
 }
 
 
@@ -91,10 +92,10 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 
 void UPuzzlePlatformsGameInstance::Host()
 {
-	check(Menu);
-	if (Menu)
+	check(MainMenu);
+	if (MainMenu)
 	{
-		Menu->TearDown();
+		MainMenu->TearDown();
 	}
 
 
@@ -124,10 +125,10 @@ void UPuzzlePlatformsGameInstance::Host()
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address)
 {
-	check(Menu);
-	if (Menu)
+	check(MainMenu);
+	if (MainMenu)
 	{
-		Menu->TearDown();
+		MainMenu->TearDown();
 	}
 
 
@@ -150,4 +151,35 @@ void UPuzzlePlatformsGameInstance::Join(const FString& Address)
 	Engine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
+
+void UPuzzlePlatformsGameInstance::LoadMainMenu()
+{
+	UEngine* Engine = GetEngine();
+	check(Engine);
+	if (!Engine)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	check(World);
+	if (!World)
+	{
+		return;
+	}
+	
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	check(PlayerController);
+	if (!PlayerController)
+	{
+		return;
+	}
+
+
+	UE_LOG(LogTemp, Warning, TEXT("LoadMainMenu"));
+	Engine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, TEXT("LoadMainMenu"));
+
+	PlayerController->ClientTravel(TEXT("/Game/MenuSystem/MainMenu"), ETravelType::TRAVEL_Absolute);
 }

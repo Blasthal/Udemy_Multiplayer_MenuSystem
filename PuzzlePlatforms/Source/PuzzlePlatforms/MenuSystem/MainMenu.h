@@ -15,8 +15,22 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
+
 private:
 	virtual bool Initialize() override;
+	
+	
+	UFUNCTION()
+	void HostServer();
+
+	UFUNCTION()
+	void JoinServer();
+
+	UFUNCTION()
+	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenJoinMenu();
 
 
 	UPROPERTY(meta = (BindWidget))
@@ -42,17 +56,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* IPAddressField = nullptr;
-
-
-	UFUNCTION()
-	void HostServer();
-
-	UFUNCTION()
-	void JoinServer();
-
-	UFUNCTION()
-	void OpenMainMenu();
-
-	UFUNCTION()
-	void OpenJoinMenu();
 };

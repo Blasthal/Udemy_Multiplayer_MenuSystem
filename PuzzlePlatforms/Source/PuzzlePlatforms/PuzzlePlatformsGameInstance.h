@@ -37,14 +37,17 @@ public:
 
 	UFUNCTION(Exec)
 	virtual void Host() override;
-
+	
 	UFUNCTION(Exec)
 	virtual void Join(const FString& Address) override;
+
+	UFUNCTION(Exec)
+	virtual void LoadMainMenu() override;
 
 
 private:
 	TSubclassOf<UUserWidget> MenuClass = nullptr;
-	UMainMenu* Menu = nullptr;
+	UMainMenu* MainMenu = nullptr;
 
 	TSubclassOf<UUserWidget> InGameMenuClass = nullptr;
 	UInGameMenu* InGameMenu = nullptr;
