@@ -22,15 +22,20 @@ private:
 
 	UFUNCTION()
 	void CancelPressed();
-
+	
 	UFUNCTION()
 	void QuitPressed();
-
+	
+	UFUNCTION()
+	void ExitPressed();
 
 private:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* CancelButton = nullptr;
-
+	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ExitButton = nullptr;
 };

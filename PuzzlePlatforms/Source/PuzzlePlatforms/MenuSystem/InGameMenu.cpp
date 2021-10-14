@@ -21,11 +21,18 @@ bool UInGameMenu::Initialize()
 		CancelButton->OnClicked.AddDynamic(this, &UInGameMenu::CancelPressed);
 	}
 
-
+	
 	ensure(QuitButton);
 	if (QuitButton)
 	{
 		QuitButton->OnClicked.AddDynamic(this, &UInGameMenu::QuitPressed);
+	}
+
+
+	ensure(ExitButton);
+	if (ExitButton)
+	{
+		ExitButton->OnClicked.AddDynamic(this, &UInGameMenu::ExitPressed);
 	}
 
 
@@ -49,4 +56,25 @@ void UInGameMenu::QuitPressed()
 		TearDown();
 		MenuInterface->LoadMainMenu();
 	}
+}
+
+void UInGameMenu::ExitPressed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Pressed - %s"), *ExitButton->GetName());
+
+	UWorld* World = GetWorld();
+	check(World);
+	if (!World)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	check(PlayerController);
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	PlayerController->ConsoleCommand("exit");
 }
